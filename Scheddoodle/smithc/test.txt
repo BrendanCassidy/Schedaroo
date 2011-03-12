@@ -1,3 +1,0 @@
-This is a test .txt file.
-
-Carl edited this.
