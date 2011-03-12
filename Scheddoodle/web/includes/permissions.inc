@@ -1,0 +1,88 @@
+<?php
+
+########################################################################
+## PERMISSIONS FUNCTIONS
+########################################################################
+
+function isloggedin() {
+    if (isset($_COOKIE['user'])) { return true; }
+    return; // should return false here?
+}
+
+function checkPermissions() { // for now,this will just check to see if a user is logged in, but later it might do something else
+    if (isloggedin() == false) {
+        if ($_SERVER['QUERY_STRING']) {
+            $querystring = '?' . $_SERVER['QUERY_STRING'];
+        }
+        echo '<script>window.location="' . URL . '/login.php?redirect=' . $_SERVER['PHP_SELF'] . $querystring . '";</script>';
+    }
+}
+
+function checkAllowedEdit($problem) {
+
+    global $current_user;
+
+    if (!isAdminInProblem($current_user, $problem['id'])) { die("you are not allowed to edit this event"); }
+    else { return; }
+
+}
+
+function checkAllowedViewResponses($problem) {
+
+  global $current_user;
+
+  if (!isAdminInProblem($current_user, $problem['id'])) { die("you are not allowed to view user responses to this event"); }
+  else { return; }
+
+}
+
+function checkAllowedView($problem) {
+
+    global $current_user;
+    
+    if (!isParticipantInProblem($current_user, $problem['id'])) { die("you are not a participant"); }
+    else if ($problem['status'] != "posted") { die(" the problem is not posted yet"); }
+    else { return; }
+}
+
+function checkAllowedRespond($problem) {
+
+  // also check to make sure we are responding in the right directory. aka not a many to one for bipartite
+
+  global $current_user;
+
+  switch ($problem['type']) {
+
+      case "private":
+          if (!isParticipantInProblem($current_user, $problem['id'])) { die("this is a private problem. you are not allowed to join"); }
+          // do not break here since we will perform addition checks
+
+      case "public":
+          if ($problem['status'] == "open") { return; }
+          else if ($problem['status'] == "timed") {
+	      if (isExpired($problem['id'])) { die("the schedule is expired"); }
+	      else { return; }
+	  }
+          else if ($problem['status'] == "closed") { die("the schedule is closed"); }
+          else if ($problem['status'] == "posted") { die("the problem is posted. you should go and view the results instead of trying to go to the respond page"); }
+          else { die("this problem has no status. please set one on the edit problem page"); }
+          break;
+
+      default:
+          die("error in checkAlloweResp: no problem type");
+          break;
+  }
+}
+
+function loginlink() {
+  if (isloggedin() == true) {
+    $user = getUserById($_COOKIE['user']);
+
+    //I added a change password link. This code is horrifically ugly. Someone help me change it please.
+    print 'Welcome, ' . $user['name'] . '. [<a href="javascript:void(0)" onclick="logout()">logout</a>]' . ' [<a href = "' . URL . '/changepass.php">change password</a>]';
+  }
+  else { print '[<a href="' . URL . '/login.php">login</a>]'; }
+}
+
+
+?>

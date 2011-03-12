@@ -1,0 +1,63 @@
+CREATE TABLE users (
+    id integer primary key AUTO_INCREMENT, -- the user's id
+    name text, -- the user's name
+    email text, -- the user's email
+    password text, -- the user's password
+    created date -- the date the user was added
+);
+
+CREATE TABLE groups (
+    id integer primary key AUTO_INCREMENT, -- the group's id
+    name text, -- the group's name
+    description text, -- description of the group
+    type text -- whether the group is public, private, or admin
+);
+
+CREATE TABLE user2group (
+    userID integer, -- the user id
+    groupID integer,  -- the group id
+    isAdmin integer DEFAULT 0, -- 0 if not admin, 1 if admin
+    isParticipant integer DEFAULT 0 -- 0 if not, 1 if pending, 2 if in group
+);
+
+CREATE TABLE user2problem (
+    userID integer,
+    problemID integer,
+    isAdmin integer DEFAULT 0,
+    isParticipant integer DEFAULT 0,
+    hasResponded integer DEFAULT 0,
+    isArchived integer DEFAULT 0
+);
+
+CREATE TABLE group2problem (
+    groupID integer,
+    problemID integer,
+    isAdmin integer DEFAULT 0,
+    isParticipant integer DEFAULT 0
+);
+
+CREATE TABLE problems (
+    id integer primary key AUTO_INCREMENT,
+    name text, -- the name of the problem
+    algorithm text, -- the name of the algorithm
+    description text, -- admin's description of the problem
+    end_time datetime, -- the time that the problem expires if the status is timed (maybe convert to timestamp type)
+    status text, -- stores the problem status
+    comment text, -- stores comments from the admin to the participants for when they view a problem
+    type text, -- stores the problem type (public or private)
+    created timestamp DEFAULT NOW() -- stores when the problem was created
+);
+
+CREATE TABLE data ( -- maybe make a separate table for preferences to improve speed?
+    problem integer, -- specifies a problem id (when user=0: can hold setup information for the problem - ie specified time slots, etc)
+    user integer, -- specifies the user id (when problem=0: can hold default user information, email address, etc)
+    k text, -- ie: preferences, calendar_url
+    v text -- the value
+);
+
+CREATE TABLE algorithms (
+    id integer primary key AUTO_INCREMENT,
+    name text, -- the name of the algorithm
+    slug text, -- the name of the folder that the algorithm is in
+    description text -- a description of the algorithm
+);

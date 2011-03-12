@@ -1,0 +1,8 @@
+/* runStyle.css -- stylesheet for bipartite/run.php */
+
+#assignmentTable, #unassignedTable { width: 45%; margin-left: auto; margin-right: auto; border-collapse: collapse; margin: 10px; }
+#assignmentTable { clear: left; float: left; }
+#unassignedTable { clear: right; float: right; }
+
+#assignmentTable td, #assignmentTable th, #unassignedTable th, #unassignedTable td { border: 1px solid #000000; padding: 10px; }
+#assignmentTable .idCell, #unassignedTable .idCell { display: none; }

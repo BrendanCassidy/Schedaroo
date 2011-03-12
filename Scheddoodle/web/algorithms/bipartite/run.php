@@ -1,0 +1,87 @@
+<?php
+
+include_once '../../includes/config.inc'; // add a wrapper so we do not have to use relative path
+include_once 'functions.php';
+
+checkPermissions();
+
+if (!isset($_GET['problem'])) { die("no problem specified"); }
+$problem = getProblemById($_GET['problem']);
+checkAllowedEdit($problem);
+
+include_once PATH . '/includes/header.inc';
+include_once PATH . '/includes/functions.php';
+
+$status = getProblemStatus($problem['id']);
+$hasRun = getData($problem['id'], 0, 'hasRun');
+
+if (!$hasRun['v']) { // if it is the first time viewing this page, run the problem
+    calculate($problem['id']);
+    addData($problem['id'], 0, 'hasRun', 1);
+}
+
+list($assignments, $unassignedUsers) = getAssignments($problem['id']);
+
+?>
+<script type="text/javascript" src="<?php echo URL ?>/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="<?php echo URL ?>/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" src="run.js"></script>
+<link rel="stylesheet" type="text/css" href="runStyle.css">
+
+<?php include_once PATH . '/includes/body.inc' ?>
+
+<h1>Assignments: <?php echo $problem['name'] ?></h1>
+<div style="text-align:center;"><?php echo $problem['description'] ?></div>
+<div class="outputdiv">
+
+<h3 style = "margin-top:0; border-bottom:1px solid black;">Finalize Assignments</h3>
+<div style = "text-align:center;">
+<span style = "margin-top:1em; margin-bottom: 1em;"> The current user-resource assignments are listed below. If you want to change them, select users and use the "Swap" and "Unassign" buttons.</span>
+</div>
+
+<div>
+<table id="assignmentTable">
+<thead>
+<tr><th>Assignment</th><th>Participant</th></tr>
+<tr style = "display:none"><td id = "problemID"><?php echo $_GET["problem"];?></td><tr>
+</thead>
+<tbody>
+<?php
+foreach ($assignments as $assignment) {
+    echo '<tr><td><span class="nameCell">' . $assignment['assignment']['name'] . '</span><span class="idCell">' . $assignment['assignment']['id'] . '</span></td><td><span class="nameCell">' . getNameString($assignment) . '</span><span class="idCell">' . $assignment['id'] . '</span></td></tr>' . "\n";
+}    
+?>
+</tbody>
+</table>
+
+<table id="unassignedTable">
+<thead>
+<tr><th style="display: none;"></th><th>Unassigned (blue = not responded)</th></tr>
+</thead>
+<tbody>
+<?php
+foreach ($unassignedUsers as $unassignedUser) {
+    $class = "";
+    if (!hasResponded($problem['id'], $unassignedUser['id'])) { $class = ' class="notresponded" title="participant has not responded"'; }
+    echo '<tr' . $class . '><td style="display: none;"><span class="nameCell"></span><span class="idCell">0</span></td><td><span class="nameCell">' . getNameString($unassignedUser) . '</span><span class="idCell">' . $unassignedUser['id'] . '</span></td></tr>' . "\n";
+}
+?>
+</tbody>
+</table>
+</div>
+
+<div style="clear: both; text-align:center;"><input type="button" id="swapButton" value="Swap/Assign" onclick="swap(<?php echo $problem['id'] ?>);" disabled><input type="button" id="unassignButton" value="Unassign" onclick="unassign(<?php echo $problem['id'] ?>);" disabled><input type="button" id="recalculateButton" value="Reset to Optimum" onclick="calculate(<?php echo $problem['id'] ?>);"></div>
+
+</div>
+
+<div class = "outputdiv">
+
+<h3 style = "margin-top:0; border-bottom:1px solid black;">Notify Respondents</h3>
+
+<div style="text-align: center; clear:both;"><?php drawPostButtons($status, $problem['id']) ?></div>
+
+<?php drawCommentsField($problem['id'], $problem['comment']) ?>
+
+</div>
+
+<?php include_once PATH . '/includes/footer.inc'; ?>

@@ -1,0 +1,35 @@
+<?php
+include_once '../../includes/config.inc';
+include_once 'functions.php';
+include_once PATH . '/includes/header.inc';
+checkPermissions();
+if (!(isset($_GET['problem']))) { die("no problem specified"); }
+$problem = getProblemById($_GET['problem']);
+$user = $_COOKIE['user']; // just use current_user
+checkAllowedRespond($problem);
+$resources = getAllResources($problem['id']);
+?>
+
+<script src="<?php echo URL ?>/js/jquery-1.4.2.min.js"></script>
+
+<?php include_once PATH . '/includes/body.inc' ?>
+<h1><?php echo $problem['name'] ?></h1>
+
+<p style="width:70%;"><?php echo $problem['description'] ?></p>
+
+<form action="process.php" method="post">
+<input type="hidden" name="action" value="respond">
+<input type="hidden" name="user" value="<?php echo $user ?>">
+<input type="hidden" name="problem" value="<?php echo $problem['id'] ?>">
+<?php
+foreach ($resources as $resource) {
+    $preferences = getPreferencesForParticipant($problem['id'], $user);
+    $checked = "";
+    if (in_array($resource['id'], $preferences)) { $checked = "checked"; }
+    echo '<p><input type="checkbox" name="resources[]" value="' . $resource['id'] . '"' . $checked . '>' . $resource['name'] . "</p>\n";
+}
+?>
+<input type="submit" value="Submit">
+</form>
+
+<?php include_once '../../includes/footer.inc' ?>

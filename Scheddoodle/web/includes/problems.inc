@@ -1,0 +1,457 @@
+<?php
+
+########################################################################
+## PROBLEM FUNCTIONS
+########################################################################
+
+// returns a problem
+function getProblemById($id) {
+    $result = mysql_query("SELECT * FROM `problems` WHERE id=$id");
+    return  mysql_fetch_array($result);
+}
+
+// adds a problem into the database
+function addProblem($name, $algorithm, $description, $end_time, $status, $type) {
+    $name = sanitize($name);
+    $description = sanitize($description);
+    if (!$end_time) { $end_time = 'NULL'; }
+    else { $end_time = "'" . $end_time . "'"; }
+    $query = sprintf("INSERT INTO `problems` (`name`, `algorithm`, `description`, `end_time`, `status`, `type`) VALUES ('%s', %d, '%s', %s, '%s', '%s')", $name, $algorithm, $description, $end_time, $status, $type);
+    mysql_query($query);
+    return mysql_insert_id();
+}
+
+// updates a current problem in the database
+function updateProblem($id, $name, $description, $end_time, $status, $type) {
+    $name = sanitize($name);
+    $description = sanitize($description);
+    if (!$end_time) { $end_time = 'NULL'; }
+    else { $end_time = "'" . $end_time . "'"; }
+    $query = sprintf("UPDATE `problems` SET name='%s', description='%s', end_time=%s, status='%s', type='%s' WHERE id=%d", $name, $description, $end_time, $status, $type, $id);
+    mysql_query($query);
+}
+
+// updates a problem's comment in the database
+function updateProblemComment($id, $comment) {
+    $comment = sanitize($comment);
+    $query = sprintf("UPDATE `problems` SET comment='%s' WHERE id=%d", $comment, $id);
+    mysql_query($query);
+}
+
+// delete's a problem and all associated user data
+function deleteProblem($problem) {
+    mysql_query("DELETE FROM `problems` WHERE id=$problem");
+    mysql_query("DELETE FROM `user2problem` WHERE problemID=$problem");
+    mysql_query("DELETE FROM `data` WHERE problem=$problem");
+}
+
+########################################################################
+## SORT PROBLEMS
+########################################################################
+function sortProblemsByRelevance($problems, $user) {
+    return sortProblemsByAdminParticipant(sortProblemsByResponded(sortProblemsByStatus($problems), $user), $user);
+}
+
+function sortProblemsByAdminParticipant ($problems, $user) {
+  $adminParticipant = array();
+  $admin = array();
+  $participant = array();
+  $neither = array();
+  $problems = array_reverse($problems); // reverse order so that appending later maintains order within categories
+  foreach ($problems as $problem) {
+    if (isAdminForProblem($problem['id'], $user)) {
+      if (isParticipantInProblem($user, $problem['id'])) {
+	$adminParticipant[] = $problem;
+      }
+      else {
+	$admin[] = $problem;
+      }
+    }
+    else {
+      if (isParticipantInProblem($user, $problem['id'])) {
+	$participant[] = $problem;
+      }
+      else {
+	$neither[] = $problem;
+      }
+    }
+  }
+  return array_merge($adminParticipant, $admin, $participant, $neither);
+}
+
+function sortProblemsByStatus($problems) {
+  $open = array();
+  $closed = array();
+  $posted = array ();
+  $reverse = array();
+  $problems = array_reverse($problems); // reverse order so that appending later maintains order within categories
+  foreach ($problems as $problem) {
+    $problemRow = getProblemById($problem['id']);
+    if ($problemRow['status'] == 'open') {
+      $open[] = $problem;
+    }
+    else if ($problemRow['status'] == 'closed') {
+      $closed[] = $problem;
+    }
+    else { //if ($problemRow['status'] == 'posted') {
+      $posted[] = $problem;
+    }
+  }
+  return array_merge($open, $posted, $closed);
+}
+
+function sortProblemsByResponded($problems, $user) {
+  $responded = array();
+  $notResponded = array();
+  $notParticipant = array();
+  $problems = array_reverse($problems); // reverse order so that appending later maintains order within categories
+  foreach ($problems as $problem) {
+    if (isParticipantInProblem($user, $problem['id'])) {
+      if(hasResponded($problem['id'], $user)) {
+	$responded[] = $problem;
+      }
+      else {
+	$notResponded[] = $problem;
+      }
+    }
+    else {
+      $notParticipant[] = $problem;
+    }
+  }
+  return array_merge($responded, $notResponded, $notParticipant);
+}
+
+########################################################################
+## PROBLEM PARTICIPATION
+########################################################################
+
+// removes an admin from a problem
+function removeAdminFromProblem($problem, $user) {
+    $query = "SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem";
+    $result = mysql_query($query);
+    $row = mysql_fetch_array($result);
+    if ($row && $row['isParticipant']) {
+      mysql_query("UPDATE `user2problem` SET isAdmin=0 WHERE userID=$user AND problemID=$problem");
+    }
+    else {
+        mysql_query("DELETE FROM `user2problem` WHERE userID=$user AND problemID=$problem");
+        mysql_query("DELETE FROM `data` WHERE problem=$problem AND user=$user"); // if they are not a participant, we can all data for this user
+    }
+}
+
+// removes a participant from a problem
+function removeParticipantFromProblem($problem, $user) {
+    $query = "SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem";
+    $result = mysql_query($query);
+    $row = mysql_fetch_array($result);
+    if ($row && $row['isAdmin']) {
+      mysql_query("UPDATE `user2problem` SET isParticipant=0, hasResponded=0  WHERE userID=$user AND problemID=$problem");
+    }
+    else {
+        mysql_query("DELETE FROM `user2problem` WHERE userID=$user AND problemID=$problem");
+    }
+    mysql_query("DELETE FROM `data` WHERE problem=$problem AND user=$user"); // this is fine unless we want to store data for the admin
+}
+
+// DELETE ME
+function isUserInProblem($user, $problem) { // delete this
+    return isParticipantInProblem($user, $problem);
+}
+
+// returns 1 if participant is a part of a problem, otherwise 0
+function isParticipantInProblem($user, $problem) {
+    $result = mysql_query("SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem AND isParticipant=1");
+    if (mysql_num_rows($result)) { return 1; }
+    else { return 0; }
+}
+
+// returns 1 if admin is a part of a problem, otherwise 0
+function isAdminInProblem($user, $problem) {
+    $result = mysql_query("SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem AND isAdmin=1");
+    if (mysql_num_rows($result)) { return 1; }
+    else { return 0; }
+}
+
+// adds a user to a problem
+function addParticipantToProblem($problem, $user) {
+  $query = "SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem";
+  $result = mysql_query($query);
+  $row = mysql_fetch_array($result);
+  if (!$row) {
+    $insertQuery = "INSERT INTO `user2problem` (`userID`, `problemID`, `isParticipant`) VALUES ($user, $problem, 1)";
+    mysql_query($insertQuery);
+    return 0;
+  }
+  else if ($row['isParticipant']) { return 1; }
+  else {
+      $updateQuery = "UPDATE `user2problem` SET isParticipant=1 WHERE userID=$user AND problemID=$problem";
+      mysql_query($updateQuery);
+      return 0;
+  }
+}
+
+// PHASE OUT
+function addUserToProblem($problem, $user) { addParticipantToProblem($problem, $user); } // phase this out
+
+// adds an admin to a problem
+function addAdminToProblem($problem, $user) {
+  $query = "SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem";
+  $result = mysql_query($query);
+  $row = mysql_fetch_array($result);
+  if (!$row) {
+    $insertQuery = "INSERT INTO `user2problem` (`userID`, `problemID`, `isAdmin`) VALUES ($user, $problem, 1)";
+    mysql_query($insertQuery);
+    return 0;
+  }
+  else if ($row['isAdmin']) { return 1; }
+  else {
+      $updateQuery = "UPDATE `user2problem` SET isAdmin=1 WHERE userID=$user AND problemID=$problem";
+      mysql_query($updateQuery);
+      return 0;
+  }
+}
+
+// archives a problem for a user
+function archiveProblem($problem, $user) {
+    $query = sprintf("UPDATE `user2problem` SET isArchived=1 WHERE userID=%d AND problemID=%d", $user, $problem);
+    mysql_query($query);
+}
+
+// un-archives a problem for a user
+function unArchiveProblem($problem, $user) {
+    $query = sprintf("UPDATE `user2problem` SET isArchived=0 WHERE userID=%d AND problemID=%d", $user, $problem);
+    mysql_query($query);
+}
+
+
+########################################################################
+## GETTING PROBLEMS
+########################################################################
+
+// returns a list of closing problems
+function getClosingProblems() {
+    $result = mysql_query("SELECT * FROM `problems` WHERE status='timed' AND TIMESTAMPDIFF(HOUR, NOW(), end_time) < 24 AND TIMESTAMPDIFF(HOUR, NOW(), end_time) > 21;");
+    $rows = array();
+    while ($row = mysql_fetch_array($result)) {
+         $rows[] = $row;
+    }
+    return $rows;
+}
+
+// returns an array of problems for a user
+function getProblemsForUser($user) {
+  $rows = array();
+
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE userID=$user");
+  while ($row = mysql_fetch_array($result)) {
+      $problem = getProblemById($row['problemID']);
+      $problem["isAdmin"] = $row['isAdmin'];
+      $problem["isParticipant"] = $row['isParticipant'];
+      $problem["isArchived"] = $row['isArchived'];
+      $rows[] = $problem;
+  }
+  return $rows;
+}
+
+function getRequests($user) {
+    die("do not user getRequests function. use getProblemsForUser instead");
+    echo "DO NOT USER THIS FUNCTION: getRequests. User getProblemsForUser Insetad";
+    return getProblemsForUser($user);
+}
+
+function getUsers($problem) { echo "DO NOT USER THIS!!!"; return getUsersForProblem($problem); } // phasing this out
+
+function getUsersForProblem($problem) {
+    die("do not use getUsersForProblem");
+    return getParticipantsForProblem($problem);
+}
+
+function getParticipantsForProblem($problem, $hasResponded='all') {
+    if ($hasResponded != 'all') { $result = mysql_query("SELECT * FROM `user2problem` WHERE problemID=$problem AND isParticipant=1 AND hasResponded=$hasResponded"); }
+    else { $result = mysql_query("SELECT * FROM `user2problem` WHERE problemID=$problem AND isParticipant=1"); }
+    $participants = array();
+    
+    while ($row = mysql_fetch_array($result)) {
+        $participant = getUserById($row['userID']);
+        $participant["hasResponded"] = $row["hasResponded"];
+        $participants[] = $participant;
+    }
+    usort($participants, "compareUsers");
+    return $participants;
+}
+
+function getAdminsForProblem($problem) {
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE problemID=$problem AND isAdmin=1");
+  $admins = array();
+
+  while ($row = mysql_fetch_array($result)) {
+    $admins[] = getUserById($row['userID']);
+  }
+  usort($admins, "compareUsers");
+  return $admins;
+}
+
+// returns 1 if the user is an admin in a problem, 0 otherwise
+function isAdminForProblem($problem, $user) {
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem AND isAdmin=1");
+
+  $row = mysql_fetch_array($result);
+
+  if ($row) { return 1;}
+  return 0;
+}
+
+// a comparison function to compare 2 users
+function compareUsers($participant1, $participant2) {
+    return strcmp($participant1['name'], $participant2['name']);
+}
+
+########################################################################
+## PUBLIC PROBLEMS
+########################################################################
+
+// returns all public problems that are open
+function getPublicProblems() {
+
+  $result = mysql_query("SELECT *, DATE(created) AS createdDate FROM `problems` WHERE (status='open' OR status='timed') AND type='public' ORDER BY created DESC");
+
+  while ($problem = mysql_fetch_array($result)) {
+      if (!isExpired($problem['id'])) { break; }
+  }
+  
+  $currentDate = $problem['createdDate'];
+
+  if (!$problem) { return array(); } // if there are no problems, just return an empty array
+
+  $datesArray[$currentDate] = array($problem);
+
+  while ($problem = mysql_fetch_array($result)) {
+      if ($currentDate == $problem['createdDate'] && !isExpired($problem['id'])) {
+          $datesArray[$currentDate][] = $problem;
+      }
+      else if (!isExpired($problem['id'])) {
+        $currentDate = $problem['createdDate'];
+	$datesArray[$currentDate] = array($problem);
+      }
+  }
+  return $datesArray;
+}
+
+########################################################################
+## PROBLEM STATUS
+########################################################################
+
+// sets the status of a problem
+function setProblemStatus($problem, $status) {
+    if ($status == "open" || $status == "closed" || $status == "timed" || $status == "posted") {
+        $query = sprintf("UPDATE `problems` SET status='%s' WHERE id=%d", $status, $problem);
+        mysql_query($query);
+    }
+}
+
+// returns the status of a problem
+function getProblemStatus($problem) {
+    if ($problem) {
+        $result = mysql_query("SELECT `status` FROM `problems` WHERE id=$problem");
+        $row = mysql_fetch_array($result);
+        return $row['status'];
+    }
+    else { return "open"; }
+}
+
+// returns counts of number responded and total participants
+function getResponseCount($problem) {
+    $participants = getParticipantsForProblem($problem);
+    $respondedCount = 0;
+    $totalCount = 0;
+    foreach ($participants as $participant) {
+        if ($participant['hasResponded']) {
+            $respondedCount = $respondedCount + 1;
+        }
+	$totalCount = $totalCount + 1;
+    }
+    return array($respondedCount, $totalCount);
+}
+
+########################################################################
+## PROBLEM EXPIRATION
+########################################################################
+
+// returns 1 if expired, 0 otherwise
+function isExpired($problem) {
+    $problem = getProblemById($problem);
+    if ($problem['status'] == 'timed' && $problem['end_time'] && (date('Y', strtotime($problem['end_time'])-time()+21600) - 1970) < 0) {
+        return 1;
+    }
+    else { return 0; }
+}
+
+// returns a text string of when the problem will expire
+function expirationTime($end_time) { 
+if (!$end_time) { return "Manual Expiration"; }
+    $year = date('Y', strtotime($end_time)-time()+21600) - 1970;
+    if ($year < 0) { return "Expired"; }
+    $month = date('m', strtotime($end_time)-time()+21600) -1; //FIX TIME ZONE YOU LAZY SCHED_DOODLEERS
+    $day = date('d', strtotime($end_time)-time()+21600) - 1;
+    $hour = date('H', strtotime($end_time)-time()+21600);
+    $minutes = date('i', strtotime($end_time)-time()+21600);
+    $seconds = date('s', strtotime($end_time)-time()+21600);
+    if ($year > 1) { return "> 1 yr"; }
+    if ($year == 1) { return "1 yr"; }
+    if ($month > 1) { return $month . " mos"; }
+    if ($month == 1) { return "1 mo"; }
+    if ($day > 1) { return  $day . " days"; }
+    if ($day == 1) { return "1 day"; }
+    if ($hour > 1) { return  $hour . " hrs"; }
+    if ($hour == 1) { return "1 hr"; }
+    if ($minutes > 1) { return  $minutes . " mins"; }
+    if ($minutes == 1) { return "1 min."; }
+    if ($seconds > 1) { return  $seconds . " secs"; }
+    if ($seconds <= 1) { return "closing"; }
+}
+
+######################################################################## **** update
+## RESPONDED
+########################################################################
+
+function hasResponded($problem, $user) {
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE userID=$user AND problemID=$problem");
+  $row = mysql_fetch_array($result);
+  if ($row['hasResponded']) { return 1; }
+  else { return 0; }
+}
+
+function markResponded($problem, $user) {
+    $query = sprintf("UPDATE `user2problem` SET hasResponded=1 WHERE userID=%d AND problemID=%d", $user, $problem);
+    mysql_query($query);
+}
+
+function markUnresponded($problem, $user) {
+    $query = sprintf("UPDATE `user2problem` SET hasResponded=0 WHERE userID=%d AND problemID=%d", $user, $problem);
+    mysql_query($query);
+}
+
+// if everyone has responded to a problem, return 1. else return 0
+function allHaveResponded($problem) {
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE problemID=$problem AND hasResponded=0");
+  if (mysql_num_rows($result)) { return 0; }
+  else { return 1; }
+}
+
+// returns an array of users for a problem and whether each user has responded or not
+function problemResponseStatus($problem) {
+  $rows = array();
+  $result = mysql_query("SELECT * FROM `user2problem` WHERE problemID=$problem AND hasResponded=1");
+  while ($row = mysql_fetch_array($result)) {
+    if ($row['hasResponded']) {
+      $row = array("user" => $row['user'], "responded" => 1); // change to hasResponded
+    }
+    else {
+      $row = array("user" => $row['user'], "responded" => 0);
+    }
+    $rows[] = $row;
+  }
+  return $rows;
+}
+
+?>

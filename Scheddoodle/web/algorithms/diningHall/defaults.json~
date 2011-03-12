@@ -1,0 +1,18 @@
+{"days": [
+
+{"day":"sun", "shifts":["Runner 1", "Runner 2", "Ice Maker", "Cleanup"]},
+{"day":"mon", "shifts":["Runner", "Grill 1", "Grill 2", "Cleanup"]},
+{"day":"tues", "shifts":["Dessert", "Ice Maker", "Runner", "Cleanup"]},
+{"day":"wed", "shifts":["Runner", "Salad Bar 1", "Salad Bar 2", "Cleanup"]},
+{"day":"thurs", "shifts":["Runner 1", "Dessert", "Cleanup 1", "Cleanup 2"]},
+{"day":"fri", "shifts":["Runner 1", "Runner 2", "Dessert 1", "Dessert 2", "Cleanup"]},
+{"day":"sat", "shifts":["Runner 1", "Runner 2", "Milk", "Cleanup"]}
+
+],
+
+"shifts": {
+
+"Runner":{"name":"Runner"},
+"Cleanup":{"name":"Pink Lady"}
+
+}}

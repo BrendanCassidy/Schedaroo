@@ -1,0 +1,47 @@
+function viewAll() {
+    $("#groupsTable").show();
+    $("#emptyGroupsTable, #groupsTable tr").hide();
+    if ($("#groupsTable tr").length == 0) {
+        $("#groupsTable").hide();
+        $("#emptyGroupsTable").fadeIn("fast");
+    }
+    else { $("#groupsTable tr").show(); }
+}
+
+function viewParticipant() {
+    $("#groupsTable").show();
+    $("#emptyGroupsTable, #groupsTable tr").hide();
+    if ($("#groupsTable .participant").length == 0) {
+        $("#groupsTable").hide();
+        $("#emptyGroupsTable").fadeIn("fast");
+    }
+    else { $("#groupsTable .participant").show(); }
+}
+
+function viewAdmin() {
+    $("#groupsTable").show();
+    $("#emptyGroupsTable, #groupsTable tr").hide();
+    if ($("#groupsTable .admin").length == 0) {
+        $("#groupsTable").hide();
+        $("#emptyGroupsTable").fadeIn("fast");
+    }
+    else { $("#groupsTable .admin").show(); }
+}
+
+function deleteGroup(groupID, groupName) {
+    $("#" + groupID).addClass("todelete");
+    if (confirm("Are you sure you want to delete the group:\n\n" + groupName)) {
+        $.post("do.php", { "action":"delete_group", "group":groupID }, function(data) {
+            if (data.out == 0) {
+                if ($("#groupsTable tr:visible").length == 1) {
+                    $("#groupsTable").hide();
+                    $("#emptyGroupsTable").fadeIn("fast");
+                    $("#" + groupID).remove();
+                }
+                else { $("#" + groupID).fadeOut("fast", function() { $("#" + groupID).remove(); }); }
+            }
+            else { alert("an error has occured while deleting the group"); }
+        }, "json");
+    }
+    else { $("#" + groupID).removeClass("todelete"); }
+}

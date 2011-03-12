@@ -1,0 +1,9 @@
+<?php
+
+include_once "includes/config.inc";
+
+$algorithm = getAlgorithmFromProblem($_GET['problem']);
+
+include_once "algorithms/" . $algorithm['slug'] . "/view.php";
+
+?>

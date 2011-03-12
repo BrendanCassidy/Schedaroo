@@ -1,0 +1,43 @@
+<html>
+<body>
+
+<?php
+    include("menu.html");
+    include_once 'includes/config.inc';
+    include_once 'includes/header.inc';
+    include_once 'includes/body.inc';
+?>
+
+<div id="right">
+<h2>Results</h2>
+
+<?php
+    /*echo "<h3>This signup sheet is closed until next year.</h3>"*/
+	$to = "elfmanw@carleton.edu, levyd@carleton.edu, cassidyb@carleton.edu, kingn@carleton.edu, martint@carleton.edu, smithc@carleton.edu";
+	$headers = "From: Scheddoodle Feedback <scheddoodle@carleton.edu>";
+	$subject = "Scheddoodle Feedback from $name";
+
+	$body = "Name: $_POST[name] \n\n"
+			. "Requested improvements:\n\n$_POST[improvements]\n\n\n";
+
+	if( mail( $to, $subject, $body, $headers ) )
+	{
+		echo("<p></p>");
+		echo("<p></p>");
+		echo("<p>Your feedback has been submitted with the following information:</p>");
+		echo("<blockquote><pre>$body</pre></blockquote>");
+	}
+	else
+	{
+		echo("\n\nAn error has occured.  Please try again later.\n");
+		?>
+		
+		<a href="helpForm.php">Return to Feedback Page</a>
+		<?php
+	}
+?>
+
+</div>
+</body>
+<?php include_once PATH .'/includes/footer.inc'; ?>
+</html>

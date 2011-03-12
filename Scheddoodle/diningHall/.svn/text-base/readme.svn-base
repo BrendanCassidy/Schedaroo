@@ -1,0 +1,42 @@
+source [hours conracted/desired] users [shift length (min/max)] shift [shift length (min/max)] sink
+
+The dining hall algorithm would be an unsplittable flow problem, which is NP-complete and has had a lot of research done on it providing good approximation algorithms, except for a small glitch based upon the fact that all dinner shifts don't have lengths strictly within a factor of two of each other, so no pre-made really good approximations for us.
+
+Bin packing, with the users as bins that shifts are packed in to.
+
+Took inspiration in the final algorithm from the method of student managers and from approximations to bin packing.
+
+Important Values
+	Shifts: number of workers still available for that shift, worker contracted hours/length of the shift
+	Users: number of hours still available to the user, total hours of potential shifts/contracted hours
+
+while at least one shift is still unfilled:
+	get the meal time with the lowest indegree (lowest number of workers who can work the meal time)
+	for each shift in the meal time (choose the shift within the meal time randomly):
+		out of users who desire more hours and can add this shift while staying within contracted hours:
+			assign the user with the highest preference for that shift								} Possibly switch these
+			if preferences are tied, assign the user with the most desired hours left to fill		}
+			if hours tied, assign random user.
+		if no desired hours left, out of all users with contracted hours left who can work this shift:
+			***assign the user with the highest preference***
+			**if preferences are tied, assign the user with the most contracted hours left to fill***
+			random
+		
+UI Considerations:
+tutorial?
+enter contracted hours (add half an hour to that)
+alter user input based upon the "reason" they give
+give users meal times (not individual shifts)
+option: first by preference, then by difficulty/availability of user
+adding shifts after creating/running the schedule (for busy people)
+
+
+Monday Lunch		Pink Caddy
+					Student Manager
+					Mario
+
+Monday Dinner
+
+
+
+Monday Clean-Up

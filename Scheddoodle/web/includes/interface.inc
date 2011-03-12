@@ -1,0 +1,28 @@
+<?php
+
+function drawPostButtons($status, $problem) {
+    if ($status == "posted") {
+        echo '<span id = "postMessage"> Event is <b>Posted</b> (participants can view assignments)</span>'; 
+        echo '<input type="button" id="postButton" value="Unpost" onclick="postMeeting(' . $problem . ', false);">';
+
+    }
+    else {
+        echo '<span id = "postMessage"> Event is <b>Unposted</b> (participants cannot view assignments)</span>'; 
+        echo '<input type="button" id="postButton" value="Post" onclick="postMeeting(' . $problem . ', false);"';
+     }
+    echo '<input type="button" name="notify_posted_email" value="Post and Notify" onclick="postMeeting(' . $problem . ', true); notifyPosted(' . $problem . ');">';
+
+}
+
+function drawNotifyButton($problem) {
+    echo '<p id="notify_email"><a href="javascript:void(0);" onclick="notify(' . $problem . ');"><img src="' . URL . '/images/notify.png"> Send Notification to Participants</a></p>';
+}
+
+function drawCommentsField($problem, $comment) {
+    echo '<div class="comment">';
+    echo '<h2>Comments for Participants:</h2>';
+    echo '<textarea id="comment" cols="80" rows="10">' . $comment . '</textarea><br>';
+    echo '<input type="button" id="saveCommentsButton" value="Save Comments" onclick="saveComments(' . $problem . ');">';
+    echo '</div>';
+}
+?>

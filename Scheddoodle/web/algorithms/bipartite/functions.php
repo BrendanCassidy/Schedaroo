@@ -1,0 +1,146 @@
+<?php
+
+// updates a user's preferences
+function updatePreferences($problem, $user, $resources) {
+
+  $problem = getProblemById($problem);
+
+  if (!isUserInProblem($user, $problem['id']) && $problem['type'] == "public")  {
+      addUserToProblem($problem['id'], $user);
+  }
+
+  $preferences = ''; // initialize preferences string
+  //$resources = $_POST['resources']; // get the list of boxes that the user checked
+  foreach ($resources as $resource) {
+    $preferences .= $resource . "\n"; // add the ids to the preference list for that user
+  }
+  $preferences = substr($preferences, 0, -1); // take off the last new line
+  addData($problem['id'], $user, 'preference', $preferences, 1); // 1 means update or add
+
+}
+
+// runs the BPM script
+function calculate($problem) {
+    $input = '';
+    $preferences = getPreferences($problem);
+    foreach($preferences as $preference) {
+        $user = $preference['user'];
+        $resources = preg_split('[\r\n|\r|\n]', $preference['v']);
+        foreach ($resources as $resource) {
+        $input = $input . 'U' . $user . '\t' . 'R' . $resource . '\n'; 
+        }
+    }
+    exec("./BPM " . $input, $assignments);
+    mysql_query("DELETE FROM data WHERE problem=$problem AND k='assignment'"); // make this a function maybe?
+    
+    $participants = getParticipantsForProblem($problem);
+    foreach ($participants as $participant) {
+        addData($problem, substr($participant['id'], 1), 'assignment', 0, 1);
+    }
+
+    foreach ($assignments as $assignment) {
+        $assignment = preg_split("[\s]", $assignment);
+        list($user, $resource) = $assignment;
+        addData($problem, substr($user, 1), 'assignment', substr($resource, 1), 1);
+    }
+}
+
+// returns an array of preferences for a participant
+function getPreferencesForParticipant($problem, $user) {
+  $result = mysql_query("SELECT * FROM data WHERE problem=$problem AND user=$user AND k='preference'");
+  $row = mysql_fetch_array($result);
+  return preg_split('[\r\n|\n|\r]', $row['v']);
+}
+
+// returns an array of every user's preferences to a particular problem.id -- phase this out
+function getPreferences($problem) {
+  $preferences = array();
+  $query = "SELECT * FROM `data` WHERE problem=$problem AND k='preference'";
+  $result = mysql_query($query);
+  while ($preference = mysql_fetch_array($result)) {
+    $preferences[] = $preference;
+  }
+  return $preferences;
+}
+
+// returns an array of every user's preferences to a particular problem.id
+function getAllPreferences($problem) { // change this to get all preferences
+  $rows = array();
+  $participants = getParticipantsForProblem($problem);
+  foreach ($participants as $participant) {
+    $preference = getPreferencesForParticipant($problem, $participant['id']);
+    if ($preference[0]) { $participant['preference'] = $preference; }
+    else { $participant['preference'] = array(); }
+    $rows[] = $participant;
+  }
+  return $rows;
+}
+
+function getUsersForResource($problem,$resource) {
+  $users = array();  
+  $participants = getParticipantsForProblem($problem);
+  foreach ($participants as $participant) {
+    $preferences = getPreferencesForParticipant($problem,$participant['id']);
+    if (in_array($resource, $preferences)) {
+      $users[] = $participant['id'];
+    }
+  }
+  return $users;
+}
+
+// returns the assignment for a participant
+function getAssignmentForParticipant($problem, $user) {
+  $result = mysql_query("SELECT * FROM data WHERE problem=$problem AND user=$user AND k='assignment'");
+  $row = mysql_fetch_array($result);
+  return getResourceById($problem, $row['v']);
+}
+
+// returns the stored matching of users and resources
+function getAssignments($problem) {
+    $assignments = array();
+    $usedResources = array();
+    $unassignedUsers = array();
+    $participants = getParticipantsForProblem($problem);
+    foreach ($participants as $participant) {
+        $assignment = getAssignmentForParticipant($problem, $participant['id']);
+        if (!$assignment && $assignment['id'] == 0) { $unassignedUsers[] = $participant; }
+        else {
+          $participant['assignment'] = $assignment;
+          $usedResources[$assignment['id']] = 1;
+	  $assignments[] = $participant;
+	}
+    }
+    $resources = getAllResources($problem);
+    foreach ($resources as $resource) {
+      if (!isset($usedResources[$resource['id']])) { $assignments[] = array("id" => 0, "name" => "", "firstNames" => "--", "lastNames" => "", "assignment" => $resource); }
+    }
+    return array($assignments, $unassignedUsers);
+}
+
+// returns an array of all resources
+function getAllResources($problem) {    
+    $query = sprintf("SELECT * FROM data WHERE problem=%d AND user=0  AND k='resources'", $problem);
+    $result = mysql_query($query);
+    $resources = mysql_fetch_array($result);
+    if (!$resources || $resources == "") { return array(); }
+    else {
+        $resources = preg_split('[\r\n|\n|\r]', $resources['v']);
+        $rows = array();
+        foreach ($resources as $resource) {
+            if ($resource == "") { continue; }
+            $resource = preg_split('[::]', $resource);
+            $rows[] = array('id' => $resource[0], 'name' => $resource[1]);  
+        }
+        return $rows;
+    }
+}
+
+// returns a resource based on its ID
+function getResourceById($problem, $resourceID) {
+   $resources = getAllResources($problem);
+   foreach ($resources as $resource) {
+     if ($resource['id'] == $resourceID) { return array('id' => $resourceID, 'name' => $resource['name']); }
+   }
+   return null;
+}
+?>

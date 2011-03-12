@@ -1,0 +1,22 @@
+<?php
+include_once 'includes/config.inc';
+checkPermissions();
+include_once 'includes/header.inc';
+?>
+
+<script src="js/jquery-1.4.2.min.js"></script>
+<script src="js/changepass.js"></script>
+
+<?php include_once 'includes/body.inc' ?>
+
+<form id="centerForm" onSubmit="changePass(); return false;">
+<h1>Change Password</h1>
+<table>
+  <tr><td>Current Password</td><td><input type="password" name="oldpass"><span id="badpasserror" class="error">Password incorrect</span></td></tr>
+  <tr><td>New Password</p></td><td><input type="password" name="newpass"></td></tr>
+  <tr><td>Retype Password</td><td><input type="password" name="rnewpass"><span id="badmatcherror" class="error">Passwords do not match</span></td></tr>
+  <tr><td colspan="2"><input type="submit" value="change password"></td></tr>
+</table>
+</form>
+
+<?php include_once 'includes/footer.inc' ?>

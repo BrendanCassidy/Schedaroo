@@ -1,0 +1,43 @@
+
+<?php include_once '../../includes/config.inc' ?>
+<?php include_once 'functions.php' ?>
+
+<?php
+
+checkPermissions();
+
+if (!isset($_GET['problem'])) { die("no problem specified"); }
+$problem = getProblemById($_GET['problem']);
+
+checkAllowedView($problem);
+
+include_once PATH . '/includes/header.inc';
+?>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<?php include_once PATH . '/includes/body.inc' ?>
+
+<h1><?php echo $problem['name'] ?></h1>
+
+<table id="outputTable">
+<tr><th>Participant</th><th>Assignment</th></tr>
+
+<?php
+list($assignments, $unassigned) = getAssignments($problem['id']);
+foreach ($assignments as $assignment) {
+    if ($assignment['id'] == $current_user) { echo '<tr style="background:#738AE1;"><td><b>' . getNameString($assignment) . '</b></td><td><b>' . $assignment['assignment']['name'] . '</b></td></tr>';  }
+    else { echo '<tr><td>' . getNameString($assignment) . '</td><td>' . $assignment['assignment']['name'] . '</td></tr>'; }
+}
+foreach ($unassigned as $assignment) { echo '<tr><td>' . getNameString($assignment) . '</td><td>--</td></tr>'; }
+?>
+</table>
+
+<?php
+if ($problem['comment']) {
+    echo '<h2>Comments</h2>';
+    echo '<p>' . $problem['comment'] . '</p>';
+}
+?>
+
+<?php include_once PATH . '/includes/footer.inc' ?>

@@ -1,0 +1,88 @@
+<?php
+
+include_once 'includes/config.inc';
+include_once 'includes/header.inc';
+include_once 'includes/body.inc';
+?>
+
+<h1>Help</h1>
+
+<h2>My Events</h2>
+
+<h3>Typical <a href="problems.php">My Events</a> Page</h3>
+<table id="eventsTable" class="itemTable"> 
+    <tr class="row participant current">
+    <td>
+        <img class="infoButton" src="images/downarrow.png" title="Click for the event description.">
+        <span class="title">Silent Dance Party</span>
+<div style="position:relative;float:right;">[<a href="javascript:void(0);">Respond</a>]</div>
+        <div class="more"><strong>From:</strong> doej<br><strong>Description:</strong>Let's pick a time for soccer practice!</div>
+    <td class="statusColumn">Open</td> 
+    <td class="actionColumn"><span class="archiveLink"><a href="javascript:void(0);"><img src="images/archive.png" title="Archive Event"></a></span><span style="margin-left:16px;"></span></td>
+    </td>
+    </tr>
+
+    <tr class="row participant notresponded current">
+    <td>
+        <img class="infoButton" src="images/downarrow.png" title="Click for the event description.">
+        <span class="title">Soccer Practice</span>
+        <div style="position:relative;float:right;">[<a href="javascript:void(0);">Respond</a>]</div>
+        <div class="more"><strong>From:</strong> doej<br><strong>Description:</strong>Let's pick a time for soccer practice!</div>
+    </td>
+    <td class="statusColumn">Open</td> 
+    <td class="actionColumn"><span class="archiveLink"><a href="javascript:void(0);"><img src="images/archive.png" title="Archive Event"></a></span><span style="margin-left:16px;"></span></td>
+    </td>
+    </tr>
+
+    <tr class="row participant current"> 
+    <td> 
+	<img class="infoButton" src="images/downarrow.png" title="Click for the event description."></div>
+        <span class="title">Advising Meetings Winter Term</span> 
+        <div style="position:relative;float:right;">[<a href="javascript:void(0);">Respond</a>]</div>
+        <div class="more"><strong>From:</strong> doej<br><strong>Description:</strong>Let's pick a time for soccer practice!</div> 
+    </td>
+    <td class="statusColumn">Open</td> 
+    <td class="actionColumn"><span class="archiveLink"><a href="javascript:void(0);"><img src="images/archive.png" title="Archive Event"></a></span><span style="margin-left:16px;"></span></td>
+    </td>
+    </tr>
+
+    <tr class="row participant current">
+    <td>
+        <img class="infoButton" src="images/downarrow.png" title="Click for the event description."></div> 
+        <span class="title">Career Center Guest Speaker</span>
+        <div style="position:relative;float:right;">[<a href="javascript:void(0);">Respond</a>]</div>
+        <div class="more"><strong>From:</strong> doej<br><strong>Description:</strong>Let's pick a time for soccer practice!</div>
+    </td>
+    <td class="statusColumn">Open</td> 
+    <td class="actionColumn"><span class="archiveLink"><a href="javascript:void(0);"><img src="images/archive.png" title="Archive Event"></a></span><span style="margin-left:16px;"></span></td>
+    </td>
+    </tr>
+</table>
+
+<h3>What do the Icons Mean?</h3>
+<p>The rightmost column is the action column where you can</p>
+<ul>
+<li><img src="images/edit.png" title="Edit Event"> Edit event</li>
+<li><img src="images/archive.png" title="Archive Event"> Hide events</li>
+<li><img src="images/unarchive.png" title="Unarchive Event"> Unhide events</li>
+<li><img src="images/delete.png" title="Delete Event"> Delete events if you are the admin</li>
+</ul>
+
+<p>If you are an admin of an event or group, a <img src="images/admin.png" title="You are the admin of this event"> will appear next to the event or group name.</p>
+
+<h3>Responding To An Event</h3>
+<p>When you are on the <a href="problems.php">My Events</a> page, you will see a table like this with your events. If an event has a red background, it means you have not clicked respond and entered your availability for that event.</p>
+
+<h3>The Status Column</h3>
+<p>The second column tells you the status of a problem.</p>
+<ul>
+<li>Open -- you can respond to an event by entering your availability</li>
+<li>Closed -- you cannot respond</li>
+<li>Expired -- the event was a timed event and the closing time passed</li>
+<li>12 days or some time -- you have this much time to respond</li>
+<li>Posted -- you can view the event time</li>
+</ul>
+
+<h2>More Questions?</h2>
+<p>Fill out the <a href="helpForm.php">feedback form</a>.</p>
+<?php include 'includes/footer.inc' ?>

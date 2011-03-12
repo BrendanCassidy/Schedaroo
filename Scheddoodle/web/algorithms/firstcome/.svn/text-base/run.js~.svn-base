@@ -1,0 +1,123 @@
+
+
+
+
+var first = 0;
+var second = 0;
+$(document).ready(function() {
+ 
+//    $("#myTable").tablesorter();
+
+	$('#swapButton').attr('disabled',true);
+
+	tableClick($("#assignmentTable tbody tr, #unassignedTable tbody tr"));
+});
+
+function tableClick(row) {
+	row.click(function() {
+		$(this).addClass("select");
+		$('#swapButton').attr('disabled',true);
+		$('#unassignButton').attr('disabled',true);
+		if (first == this) {
+			$(first).removeClass("select");
+			first = second;
+			second = 0;
+		}
+
+		else if (second == this) {
+			$(second).removeClass("select");
+			second = 0;
+		}
+
+		else if (!first) {
+			first = this;
+		}
+
+		else if (!second) {
+			if ($(this).parent().parent().attr("id") == "unassignedTable" && $(first).parent().parent().attr("id") == "unassignedTable") {
+				$(this).removeClass("select");
+			}
+			else { second = this;}
+		}
+
+		else {
+			if ($(this).parent().parent().attr("id") == "unassignedTable" && $(second).parent().parent().attr("id") == "unassignedTable") {
+                       		$(this).removeClass("select");
+                        }
+			else {
+			        $(first).removeClass("select");
+                        	first = second;
+                        	second = this;
+			}
+		}
+
+                if (first && second) {
+			$('#swapButton').attr('disabled', false);
+			$('#unassignButton').attr('disabled', true);
+		}
+                if (first && !second && $(first).parent().parent().attr("id") != "unassignedTable" && $(first).find("td:last .idCell").html() != 0) {
+                    	$('#unassignButton').attr('disabled', false);
+                }
+	});
+};
+
+function swap(problem) {
+     	var firstResource = $(first).find("td:first .idCell").html();
+	var firstUser = $(first).find("td:last .idCell").html();
+     	var secondResource = $(second).find("td:first .idCell").html();
+	var secondUser = $(second).find("td:last .idCell").html();
+        alert(firstUser + " -- " + firstResource);
+        alert(secondUser + " -- " + secondResource);
+     	$.post("do.php", {"action": "swap_assignments", "problem": problem, "firstUser": firstUser, "firstResource": firstResource, "secondUser": secondUser, "secondResource": secondResource}, function(data) {
+	if (data.out == 0) {
+            if (firstResource==0 && secondUser==0) {
+                var firstCell = $(first).find("td:last").html();
+                $(second).find("td:last").html(firstCell);
+                $(second).removeClass("select");
+                $(first).removeClass("select");
+                $(first).remove();
+            }
+
+            else if (secondResource==0 && firstUser==0) {
+                var secondCell = $(second).find("td:last").html();
+                 $(first).find("td:last").html(secondCell);
+
+                 $(first).removeClass("select");
+
+                $(second).remove();
+            }
+            else {
+                var firstCell = $(first).find("td:last").html();
+                var secondCell = $(second).find("td:last").html();
+                $(first).find("td:last").html(secondCell);
+                $(second).find("td:last").html(firstCell);
+    
+                $(first).removeClass("select");
+                $(second).removeClass("select");
+            }
+
+            first = 0;
+            second = 0;
+
+        }
+
+        else { alert("error while swapping"); }
+    }, "json");
+
+}
+
+function unassign(problem) {
+
+  $.post("do.php", { "action":"unassignParticipant", "problem": problem, "participant": $(first).find("td:last .idCell").text() }, function(data) {
+	   if (data.out == 0) {
+	     $(first).removeClass("select");
+	     $("#unassignedTable tr:last").after('<tr><td style="display: none;"><span class="nameCell"></span><span class="idCell">0</span></td><td>' + $(first).find("td:last").html() + '</td></tr>');
+	     $(first).find("td:last").html('<span class="nameCell">--</span><span class="idCell">0</span>');
+	     tableClick($("#unassignedTable tr:last"));
+	     first = 0;
+	   }
+	   else { alert("error"); }
+
+	 }, "json");
+
+}

@@ -1,0 +1,79 @@
+<?php
+
+include_once '../../includes/config.inc';
+include_once 'functions.php';
+
+checkPermissions();
+
+if (!isset($_GET['problem'])) { die("no problem specified"); }
+$problem = getProblemById($_GET['problem']); // check to see if we find the problem
+$user = getUserById($current_user);
+
+checkAllowedView($problem);
+
+$resources = getAllResources($problem['id']);
+$preferences = getAllPreferences($problem['id']);
+$maxColIndex = getMaxColIndex($problem['id']);
+$resource = getResourceById($problem['id'], $maxColIndex);
+$comments = getData($problem['id'], 0, 'comments');
+
+include_once PATH . '/includes/header.inc';
+
+?>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<?php
+
+include_once PATH . '/includes/body.inc';
+
+echo '<h1>' . $problem['name'] . '</h1>';
+if ($problem['description']) { echo '<h2 style="text-align: center;">' . $problem['description'] . '</h2><hr>'; }
+echo '<h2 style="text-align: center;">Event Resource:</h2><h2 style="text-align: center; color: #009933;">' . $resource . '</h2><hr>';
+
+if ($problem['comment']) {
+    echo '<h2 style="text-align:center;">Comments From the Administrator:</h2>';
+    echo '<p style="text-align:center;">' . $problem['comment'] . '</p>';
+}
+
+?>
+<!--
+    <div style="width:100%;overflow:auto; text-align: center;">
+    <h2>Participant Responses</h2>
+    <table id="viewTable">
+
+    <?php/*
+        echo '<hr><tr><th>Name</th>';
+        foreach ($resources as $resource) {
+            echo '<th>' . $resource['name'] . '</th>';
+        }
+        echo "</tr>";
+
+        foreach ($preferences as $preference) {
+            if ($preference['id'] == $user['id']) { continue; }
+	    if (!hasResponded($problem['id'], $preference['id'])) { $class = ' class="participantnotresponded"'; }
+            else { $class = ''; }
+            echo '<tr' . $class . '><td>' . $preference['name'] . '</td>';
+            foreach ($resources as $resource) {
+                echo '<td>';
+                if (in_array($resource['id'], $preference['preference'])) { echo '<img src="' . URL . '/images/check.png">'; }
+		echo '</td>';
+            }
+            echo "</tr>";
+        }
+        echo '</tr><tr style="background-color: #738AE1;"><td><b>' . $user['name'] . '</b></td>';
+
+        $preference = getPreferencesForParticipant($problem['id'], $user['id']);
+        
+        foreach ($resources as $resource) {
+            echo '<td>';
+            if (in_array($resource['id'], $preference)) { echo '<img src="' . URL . '/images/check.png">'; }
+            echo '</td>';
+        }
+    */
+    ?>
+    </tr>
+    </table>
+    </div>
+-->
+<?php include_once PATH . '/includes/footer.inc' ?>

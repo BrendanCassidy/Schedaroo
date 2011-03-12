@@ -1,0 +1,8 @@
+Nate	1:30
+Nate	3:30
+Nate	5:30
+Wes	1:30
+Wes	3:30
+Carl	1:30
+
+Wes\t1:00\nWes\t1:30\nWes\t2:00\nCarl\t1:00\nNATE\t1:00\nNATE\t1:30\n

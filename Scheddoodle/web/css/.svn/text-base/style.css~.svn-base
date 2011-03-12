@@ -1,0 +1,265 @@
+/* style.css */
+
+/* HTML, BODY */
+html {overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+html, body { margin: 0; padding: 0; height: 100%;}
+body { font-family: Century Gothic; background-image:url('http://cs-research1.mathcs.carleton.edu/scheddoodle/sched-doodle/web/images/kangaroo-main.jpg'), url('http://cs-research1.mathcs.carleton.edu/scheddoodle/sched-doodle/web/images/kangaroo-x.jpg'), url('http://cs-research1.mathcs.carleton.edu/scheddoodle/sched-doodle/web/images/kangaroo-y.jpg'); background-repeat: no-repeat, repeat-x, repeat; }
+
+/* CONTAINER */ 
+#container { min-height: 100%; position: relative; width: 800px; margin: 0 auto; background-color: #FFFFFF; border-left: 2px solid black; border-right: 2px solid black; }
+
+/* HEADER */
+#header { background-color: #E29A0E; left:80px; }
+#header img { position:relative;top:-3px;left:30px; border-style:none; }
+
+/* LINKS */
+a { text-decoration:none; }
+a:link { color:blue; }
+a:visited { color:blue; }
+a:hover { text-decoration:none; }
+
+/* LOGIN */
+#login { position: absolute; top: 0px; right: 0px; color: #000000; background-color: #E29A0E; }
+#login a:link { font-size:12px; }
+#login a:visited { font-size:12px; }
+
+/* LOGIN PAGE */
+#centerForm { margin-top: 10em; text-align: right; }
+#centerForm table { margin-left: auto; margin-right: auto; background-color: #738AE1; height: 8em; padding: 10px; border: 1px solid #262236; }
+#centerForm table td { vertical-align: top; }
+
+/* AUTHORIZATION PAGE */
+#authForm { margin-top: 2em; text-align:left; }
+#authForm table { background-color: #CCCCCC; height:5em;text-align:right;border:1px solid black; }
+
+/* NAVMENU */
+#navmenu { width: 100%; height: 2em; background-color: #E29A0E; border-bottom: 1px solid #000000; }
+#navmenu ul { float: none; list-style: none; margin: 0; padding: 0; }
+#navmenu li { float: left; margin: 0 0.3em; margin-top: -1px; }
+#navmenu li:first-child { margin-left: 1em; }
+#navmenu li:last-child { margin-right: 0; }
+#navmenu li a { display: block; height: 2em; line-height: 2em; padding: 0 2em; border: 1px solid #000000; color: white; background: #262236 repeat-x; text-decoration: none; text-align: center; }
+#navmenu a:hover { color: #FFFF94; }
+#navmenu li .selected { color: #000000; background: #FFFFFF; border-bottom: 1px solid #FFFFFF; }
+#navmenu li a.selected:hover { color: #000000; background-color: #FFFFFF; }
+
+/* OUTPUT MESSAGES */
+#output { margin-left: auto; margin-right: auto; width: 60%; border: 1px solid #000000; text-align: center; padding-bottom: 5px; background-color: #FFE07A; display: none; }
+#output h2 { font-size: 1.2em; }
+
+/* BODY padding-bottom should be same as footer height */
+#body { padding: 5px; padding-bottom: 6em; background-color: #FFFFFF; }
+#body h1 { text-align: center; }
+#body h2 { margin-bottom: 0; }
+#body p img { vertical-align: middle; }
+#body .center { margin-left:auto; margin-right:auto; }
+#body .block { text-align:center; width: 90%; margin-left: auto; margin-right: auto; }
+#body .subtitle { margin-top:0; margin-bottom:0; }
+#body .error { display: none; color: red; font-size:10pt }
+
+/* ADDING PARTICIPANTS */
+.participants { list-style-type:none; }
+
+/* AUTOFILL */
+.ui-autocomplete { max-height: 20em; overflow-y: auto; overflow-x: hidden; padding-right: 20px; font-size: .5em; }
+
+/* PARTICIPANT CHECKBOXES */
+.participants { margin-left:250px; text-align:left; }
+.request { color: red; }
+.request a { color: red; }
+
+/* INPUTS */
+.radioBlock { margin-left:175px; text-align:left; }
+.button { font-size: 1em; }
+
+/* TIME PICKER ADDON CSS */
+.ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
+.ui-timepicker-div dl{ text-align: left; }
+.ui-timepicker-div dl dt{ height: 25px; }
+.ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+
+/* ABOUT */
+.blocktext {
+    margin-left: auto;
+    margin-right: auto;
+    text-align:center;
+}
+img.post {
+padding: 6px;
+border-top: 1px solid #ddd;
+border-left: 1px solid #ddd;
+border-bottom: 1px solid #c0c0c0;
+border-right: 1px solid #c0c0c0;
+display:block;
+margin-left:auto;
+margin-right:auto;
+} 
+
+/* BUTTONS */
+#notify_email img { border: 0; vertical-align: middle; }
+
+/* TABLES */
+th { background:#262236; color:white; text-align:center; font-weight:bold; padding: 10px; border: 1px solid #000000; }
+
+/* ITEM TABLE */
+.emptyItemTable { text-align: center; margin-top: 8em; }
+
+.itemTable { width: 100%; border-collapse:collapse; }
+.itemTable th { background:#262236; color:white; text-align:center; font-weight:bold; padding: 10px; border: 1px solid #000000; }
+.itemTable td { border: 1px solid #000000; padding: 10px; }
+.itemTable .statusColumn { width: 5em; text-align: right; font-size: .75em; }
+
+.itemTable img { border: 0; vertical-align: text-top; }
+.itemTable .more { display: none; }
+.itemTable .expanded { font-weight: bold; }
+.itemTable .buttonSet { margin-left: 5px; }
+
+.select { background-color: darkseagreen !important; }
+.notAvailable { color: gray; }
+.todelete { background-color: red !important; }
+.notresponded { font-weight:900; background-color: #738AE1; }
+.participantnotresponded { background-color: #CCCCCC; }
+.responded { background-color: #FFFFFF; }
+
+/* EVENTS PAGE */
+#advancedSearchDiv { display: none; }
+#bubble { background: #FFFFFF; position: absolute; z-index: 5; padding: 10px; border: 1px solid #000000; }
+#iconbubble { background: #FFFFFF; position: absolute; z-index: 6; padding: 1px; border: 1px solid #000000; border-bottom: 1px solid #FFFFFF; }
+
+#eventsTable a:link, #eventsTable a:visited { color: #06276F; text-decoration:none; }
+#eventsTable .row:not(.current) { display: none; }
+#eventsTable .statusColumn { width: 110px; text-align:center; }
+#eventsTable .actionColumn { width: 60px; text-align:center;}
+#eventsTable .actionColumn img { padding: 2px; }
+#eventsTable .notresponded { font-weight:900; background-color:#738AE1; }
+
+/* PUBLIC EVENTS */
+#publicEventsTable { margin-top: 7px; }
+#publicEventsTable .statusColumn { text-align: center; }
+#publicEventsTable .keywords { display: none; }
+
+/* GROUPS TABLE */
+#groupsTable { background-color:#738AE1; }
+#groupsTable a:link, #groupsTable a:visited { color: #000088; text-decoration:none; }
+#groupsTable .nameColumn { border-right: 0; }
+#groupsTable .descriptionColumn { width: 30em; text-align: right; border-left: 0;}
+#groupsTable .notParticipant { background-color:#FFFFFF; }
+
+.groupTable td { border: 1px solid #000000; padding: 10px;}
+
+
+/* BPM OUTPUT PAGE -- should be in BPM's style.css */
+div.outputdiv {
+	border:2px solid black;
+	overflow: hidden;
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+div.outputdiv h3 {
+	text-align: left;
+	font-size 2em;
+	left: 20%;
+	top: 0;
+}
+
+/* COMMENTS FIELD */
+.comment { margin-left:auto; margin-right:auto; width: 100%; text-align:center; clear:both; }
+
+/* FOOTER */
+
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 6em; /* height of the footer (see padding-bottom in body) */
+    background-color: #FFFFF;
+    text-align: center;
+    font-weight: normal;
+    font-size: 75%;
+}
+
+/* JQUERY TIMEPICKER ADD-ON */
+.ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
+.ui-timepicker-div dl{ text-align: left; }
+.ui-timepicker-div dl dt{ height: 25px; }
+.ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+.ui-timepicker-div .ui_tpicker_hour div { padding-right: 2px; }
+.ui-timepicker-div .ui_tpicker_minute div { padding-right: 6px; }
+.ui-timepicker-div .ui_tpicker_second div { padding-right: 6px; }
+.ui-timepicker-div td { font-size: 90%; }
+
+/*Formatting Tables in Output Page*/
+.selected{
+    font-weight:bold;
+    background-color: #FFCCCC;
+}
+
+.deselected{
+    font-weight:normal;
+    background-color: #E0FFFF;
+}    
+
+/* tables */
+table.tablesorter {
+	font-family:arial;
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	font-size: 8pt;
+	width: 100%;
+	text-align: left;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+}
+table.tablesorter thead tr .header {
+	background-image: url(../images/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	padding: 4px;
+	background-color: #FFF;
+	vertical-align: top;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../images/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(../images/desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+background-color: #8dbdd8;
+}
+
+th.header { 
+    background-image: url(../js/blue/bg.gif);     
+    cursor: pointer; 
+    font-weight: bold; 
+    background-repeat: no-repeat; 
+    background-position: center left; 
+    padding-left: 20px; 
+    border-right: 1px solid #dad9c7; 
+    margin-left: -1px; 
+}
+
+th.headerSortUp { 
+    background-image: url(../js/blue/asc.gif); 
+    background-color: darkseagreen; 
+}
+
+th.headerSortDown { 
+    background-image: url(../js/blue/desc.gif); 
+    background-color: darkseagreen; 
+}
+
+#tooltip {position: absolute; z-index: 3000; border: 1px solid #111; background-color: #EEE; padding: 5px; opacity: 0.85;}

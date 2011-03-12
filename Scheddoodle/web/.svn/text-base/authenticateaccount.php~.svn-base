@@ -1,0 +1,41 @@
+<?php
+include_once 'includes/config.inc';
+include_once 'includes/header.inc';
+include_once 'includes/body.inc';
+
+?>
+
+<script src="js/jquery-1.4.2.min.js"></script>
+<script src="js/authenticate.js"></script>
+
+<h1>New Account Authentication</h1>
+
+<div style="float:left;margin-left:10px;">
+
+<div style="float:right;width:275px; margin-left:25px; height:225px;">
+
+<form id="authForm" onSubmit="authenticate();return false;">
+<font size="2">Activate your account using your Carleton ID</font>
+<table>
+<tr><td>Carleton Email ID</td><td><input type="text" value="e.g. smithj" onclick="this.value=''"size="20" name="id"></td></tr>
+<tr><td colspan="2"><input type="submit" value="Submit"></td></tr>
+</table>
+<span class="error" id="error">That ID is not in our database. This could be because you're not listed in the Carleton directory or you made a typo. Try again and if you keep having a problem, try our <a href="helpForm.php">feedback form</a></span>
+</form>
+
+</div>
+
+<h2>What is Scheddoodle?</h2>
+<p>Scheddoodle is a Carleton-only scheduling assistant, created by our "Scheddoodle" CS comps group. The idea is to make it easier to pick a date and time for your event.</p>
+
+<h2>Why use Scheddoodle?</h2>
+<p>Why not? Give it a shot, and we can do the work for you, whether you need to schedule a group meeting or you want to find a way to meet up with as many people as possible.</p>
+
+<h2>I got an email saying someone invited me to a schedule. What now?</h2>
+<p>First you have to verify your account. If you are listed in the Carleton directory, we have you in our records. Just enter your Carleton username in the form on this page, and you'll get an email with a password to log into the website.</p>
+
+</div>
+
+<?php
+include_once 'includes/footer.inc';
+?>

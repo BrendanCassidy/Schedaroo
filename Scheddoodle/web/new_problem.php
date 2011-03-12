@@ -1,0 +1,108 @@
+
+<?php
+include_once 'includes/config.inc';
+include_once 'includes/header.inc';
+
+?>
+
+<style>
+
+h1 {
+  text-align: center;
+  margin-top: 2.5em;
+}
+
+.schedule {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+#myTable { 
+margin-top: 15px;
+margin-right:auto;
+margin-left: auto;
+text-align: center; 
+border-spacing: 50px 10px;
+}
+
+th {
+border-bottom:lightblue solid;
+border-top:lightblue solid;
+border-left: none;
+border-right:none;
+}
+
+#generalHeader {
+border-bottom:lightblue solid thick;
+border-top:lightblue solid thick;
+border-left: none;
+border-right:none;
+font-size: 32px;
+width:250px;
+}
+a.gold:link{color:blue;}
+a.gold:visited{color:blue;}
+a.gold{text-decoration:none;}
+a.gold:hover{text-decoration:underline;}
+</style>
+
+<?php
+
+include_once 'includes/body.inc';
+checkPermissions();
+?>
+
+<table id="myTable" style="width: 85%;">
+<tr><th id="generalHeader">New Event</th></tr>
+<tr><td><a href="problem.php?type=2" class="gold">One on One Meetings (First Come First Serve)</a></td></tr>
+<tr><td><a href="problem.php?type=1" class="gold">One on One Meetings (Optimal Assignments)</a></td></tr>
+<tr><td><a href="problem.php?type=3" class="gold">Group Meeting</a></td></tr>
+<!--<tr><td><a href="problem.php?type=4" class="gold">Dining Hall (in progress)</a></td></tr>
+<tr><td><a href="problem.php?type=5" class="gold">Last Chance (in progress)</a></td></tr>-->
+</table>
+<!--
+<br><br>
+
+<table id="myTable">
+<tr>
+<th>ACT Center<br></th>
+<th>Athletics<br></th>
+<th>Comps<br></th>
+</tr>
+<tr>
+<td> <a href="problem.php?type=1" class="gold">Practice Interviews</a>  </td>
+<td> <a href="problem.php?type=1" class="gold">Individual Meetings</a>  </td>
+<td> <a href="problem.php?type=1" class="gold">Oral Exams</a>  </td>
+</tr>
+<tr>
+<td><a href="problem.php?type=3" class="gold">Worker Party</a></td>
+<td> <a href="problem.php?type=3" class="gold">Team Meeting</a></td>
+<td> <a href="problem.php?type=3" class="gold">Group Meeting</a></td>
+</tr>
+<tr></tr><tr></tr><tr></tr><tr></tr>
+<tr>
+<th>Dining Hall<br></th>
+<th>Social<br></th>
+<th>Computer Scientists<br></th>
+</tr><tr>
+<td><a href="problem.php?type=4" class="gold">Dining Hall</a></td>
+<td> <a href="problem.php?type=1" class="gold">Meet a Friend</a>  </td>
+<td> <a href="problem.php?type=1" class="gold">Bipartite Matching</a>  </td>
+</tr>
+<tr>
+<td></td>
+<td> <a href="problem.php?type=3" class="gold">Plan a Party</a></td>
+<td> <a href="problem.php?type=3" class="gold">Fancy Addition Algorithm</a></td>
+</tr>
+</table> 
+-->
+
+<!--
+<?php
+	$algorithms = mysql_query("SELECT * FROM algorithms");
+	while($algorithm = mysql_fetch_array($algorithms)) {
+		 echo '<p class="schedule"><a href="problem.php?type=' . $algorithm['id'] . '">' . $algorithm['name'] . '</a><br>' . $algorithm['description'] . '<p>';
+	}
+?>  -->
+
+<?php include_once 'includes/footer.inc' ?>

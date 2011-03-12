@@ -1,0 +1,20 @@
+/* stylesheet for many to one */
+
+/* for problem */
+#dragbuttons { margin-left: auto; margin-right: auto; width: 425px; }
+#sortable li img { border: 0; vertical-align: middle; }
+#sortable input { display: inline; width: 300px; margin-right: 3px; }
+
+
+/* for respond */
+#responseTable { margin-left: auto; margin-right: auto; border-collapse: collapse; }
+#responseTable th {background-color:#262236; color:white;border:1px solid #000000; padding:5px;}
+#responseTable td { border: 1px solid #000000; padding: 5px; }
+#responseTable td { text-align: center; }
+#responseTable td img { vertical-align: middle; }
+#responseTable .highlight { background: darkseagreen; }
+
+/* for view */
+#viewTable { margin-left:auto; margin-right:auto; border-collapse: collapse; }
+#viewTable, #viewTable th, #viewTable td { border: 1px solid #000000; padding: 10px; }
+#viewTable th { color:#FFFFFF; background-color:#292236; }

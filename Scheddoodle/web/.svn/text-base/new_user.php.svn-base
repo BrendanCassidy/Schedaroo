@@ -1,0 +1,21 @@
+<?php
+include_once 'includes/config.inc';
+include_once 'includes/header.inc';
+include_once 'includes/body.inc';
+checkPermissions();
+?>
+
+<h1>NEW USER</h1>
+
+<form action="process.php" method="post">
+    <table align="center">
+        <tr><td>Name</td><td><input type="text" name="name"></td></tr>
+        <tr><td>Email</td><td><input type="text" name="email"></td></tr>
+        <tr><td>Password</td><td><input type="password" name="password1"></td></tr>
+        <tr><td>Password Again</td><td><input type="password" name="password2"></td></tr>
+        <tr><td colspan="2" style="text-align:right;"><input type="submit" value="Login"></td></tr>
+    </table>
+    <input type="hidden" name="action" value="add_user">
+</form>
+
+<?php include_once 'includes/footer.inc' ?>

@@ -1,0 +1,15 @@
+/* stylesheet for run.php */
+
+#outputTable { margin-left: auto; margin-right: auto; width: 100%; }
+#outputTable th.slotCell:hover { background: red; }
+#outputTable { border-collapse: collapse; border: 1px solid #000000; text-align: center; }
+
+#outputTable td.sliderCell { padding: 10px !important; }
+#outputTable th, td { border: 1px solid #000000; }
+#outputTable .top { background-color: #CCCCCC; }
+#outputTable .userCell { width: 5em; }
+#outputTable .idField { display: none; }
+#outputTable .priorityCell { border-right: 0;  }
+#outputTable .valueCell { border-left:0; }
+#outputTable .valueCells { display: none; }
+#outputTable .slotCell { text-align:center; }
